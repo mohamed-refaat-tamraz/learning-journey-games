@@ -1,2 +1,34 @@
-# learning-journey-games
-Arabic educational games for children: Names of Allah and Juz Amma memory cards. React + TypeScript + Vite.
+# رحلة التعلّم — لعبتان في مشروع واحد
+
+تطبيق React وTypeScript وVite يجمع لعبة أسماء الله الحسنى ولعبة ذاكرة مفردات جزء عم.
+
+## التشغيل
+
+```sh
+npm ci
+npm run dev
+npm run lint
+npm run test:integration
+npm run build
+```
+
+- `/`: اختيار اللعبة.
+- `/asma`: أسماء الله الحسنى.
+- `/memory`: ذاكرة مفردات جزء عم.
+
+كل لعبة تُحمَّل عند فتحها. المكونات والبيانات الخاصة بها داخل `src/games/names` و`src/games/memory`، والصوت والتخزين المشترك داخل `src/shared`.
+
+## حفظ البيانات
+
+يظل مفتاح تقدّم أسماء الله الحسنى `asma_allah_kids_game_v1` كما هو، بما فيه النقاط والنجوم والمستوى. تبقى أوسمة الذاكرة في `juz_amma_badges`، وتُحفظ الصعوبة والتصنيف في `juz_amma_settings_v1`. جولة الذاكرة الحالية تبدأ من جديد عند العودة إليها؛ الأوسمة والإعدادات تبقى. الصوت مشترك بالمفتاح `learning_games_sound_enabled_v1` مع قراءة إعداد اللعبة القديمة عند أول تشغيل. لا توجد حسابات أو مزامنة بين الأجهزة.
+
+## النشر على cPanel
+
+ارفع محتويات `dist/` في جذر الصب دومين، بعد حفظ نسخة من الملفات السابقة خارج مجلد الويب. ارفع الأصول ذات الأسماء المبصومة أولًا، ثم `.htaccess` و`robots.txt`، واستبدل `index.html` أخيرًا. احتفظ بالأصول القديمة حتى لا تتعطل جلسات اللعب المفتوحة. ملف `public/.htaccess` يتيح تحديث روابط اللعبتين مباشرة دون 404. لا تحتاج النسخة الحالية API keys أو قاعدة بيانات أو Node.js على الاستضافة. النسخة معدّة للمعاينة مع `noindex` و`robots.txt`.
+
+## مصادر اللعبتين
+
+- https://github.com/partnersenior214-cell/Allah-Names — commit `cdf8fde9bfa6f9f6c60e79bd5f15c76888201d68`.
+- https://github.com/partnersenior214-cell/Memory-cards- — commit `37bd2e06d57e7875260ae38ea071d11d3b53e4eb`.
+
+حُفظ محتوى اللعبتين وترويسات الترخيص الموجودة في المصادر. النسخة الموحّدة لا تغير النصوص التعليمية الأصلية.

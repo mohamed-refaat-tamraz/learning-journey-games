@@ -1,0 +1,30 @@
+
+
+@layer base {
+  body {
+    font-family: 'Tajawal', 'Readex Pro', system-ui, -apple-system, sans-serif;
+  }
+}
+
+.font-amiri {
+  font-family: 'Amiri', serif;
+}
+
+.font-tajawal {
+  font-family: 'Tajawal', sans-serif;
+}
+
+.font-readex {
+  font-family: 'Readex Pro', sans-serif;
+}
+
+/* Vibrant Palette playful geometric backdrop */
+.bg-vibrant-play {
+  background-color: #e0f2fe; /* bg-sky-100 */
+  background-image:
+    radial-gradient(circle at 20% 15%, rgba(251, 191, 36, 0.18) 0%, transparent 28%),
+    radial-gradient(circle at 80% 25%, rgba(236, 72, 153, 0.15) 0%, transparent 32%),
+    radial-gradient(circle at 40% 85%, rgba(52, 211, 153, 0.18) 0%, transparent 30%),
+    radial-gradient(circle at 85% 80%, rgba(99, 102, 241, 0.15) 0%, transparent 35%);
+  background-attachment: fixed;
+}
