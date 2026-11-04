@@ -3,12 +3,13 @@ import { ArrowLeft, ArrowRight, BookOpen, Check, Gamepad2, Home, Layers, Sparkle
 import { setSoundEnabled, useSoundEnabled } from './shared/soundPreference';
 
 const NamesGame = lazy(() => import('./games/names/App'));
+const QuranGames = lazy(() => import('./games/quran/App'));
 const MemoryGame = lazy(() => import('./games/memory/App'));
-type Page = 'home' | 'names' | 'memory' | 'missing';
+type Page = 'home' | 'names' | 'memory' | 'quran' | 'missing';
 
 function pageFromLocation(): Page {
   const path = window.location.pathname.replace(/\/+$/, '') || '/';
-  return path === '/' ? 'home' : path === '/asma' ? 'names' : path === '/memory' ? 'memory' : 'missing';
+  return path === '/' ? 'home' : path === '/asma' ? 'names' : path === '/memory' ? 'memory' : path === '/quran' ? 'quran' : 'missing';
 }
 
 class GameBoundary extends Component<{ children: ReactNode }, { failed: boolean }> {
@@ -69,6 +70,19 @@ function HomePage({ navigate }: { navigate: (event: MouseEvent<HTMLAnchorElement
             <span className="portal-card-cta">هيا نلعب <ArrowLeft size={19} aria-hidden="true" /></span>
           </div>
         </a>
+        <a className="portal-game-card portal-quran-card" href="/quran" onClick={event => navigate(event, '/quran')}>
+          <div className="portal-card-visual portal-quran-visual" aria-hidden="true">
+            <span className="portal-game-tag"><BookOpen size={14} /> ٦ ألعاب في مكان واحد</span>
+            <div className="portal-quran-words"><span>اقرأ</span><span>وصّل</span><span>أكمل</span><span>اكتشف</span></div>
+          </div>
+          <div className="portal-card-content">
+            <div className="portal-card-kicker">كلمات ومعانٍ.. وتحديات جديدة</div>
+            <h2>ألعاب كلمات جزء عم</h2>
+            <p>طابق الكلمة بمعناها، وحل الكلمات المتقاطعة، وأكمل الحرف والآية في ست ألعاب متنوعة.</p>
+            <div className="portal-card-details"><span>٦ ألعاب</span><i aria-hidden="true" /><span>معجم ونقاط ونجوم</span></div>
+            <span className="portal-card-cta">اكتشف الألعاب <ArrowLeft size={19} aria-hidden="true" /></span>
+          </div>
+        </a>
       </section>
       <div className="portal-home-note"><Star size={17} aria-hidden="true" /><p>كل خطوة صغيرة في اللعب، تضيف شيئًا جميلًا إلى معرفتك.</p></div>
       <footer className="portal-footer">رحلة التعلّم <span aria-hidden="true">✦</span> ألعاب تعليمية للأطفال</footer>
@@ -85,7 +99,7 @@ export default function App() {
     return () => window.removeEventListener('popstate', onPopState);
   }, []);
   useEffect(() => {
-    document.title = page === 'names' ? 'أسماء الله الحسنى | رحلة التعلّم' : page === 'memory' ? 'ذاكرة مفردات جزء عم | رحلة التعلّم' : 'رحلة التعلّم | ألعاب تعليمية للأطفال';
+    document.title = page === 'names' ? 'أسماء الله الحسنى | رحلة التعلّم' : page === 'memory' ? 'ذاكرة مفردات جزء عم | رحلة التعلّم' : page === 'quran' ? 'ألعاب كلمات جزء عم | رحلة التعلّم' : 'رحلة التعلّم | ألعاب تعليمية للأطفال';
     window.scrollTo(0, 0);
     if ('speechSynthesis' in window) window.speechSynthesis.cancel();
     document.getElementById('page-content')?.focus({ preventScroll: true });
@@ -118,10 +132,10 @@ export default function App() {
         <main className="portal-message" id="page-content" tabIndex={-1}><Gamepad2 size={40} aria-hidden="true" /><h1>لم نجد هذه الصفحة</h1><a className="portal-primary" href="/" onClick={event => navigate(event, '/')}><ArrowRight size={17} /> العودة للألعاب</a></main>
       ) : (
         <div className="portal-game-stage" id="page-content" tabIndex={-1}>
-          <nav className="portal-breadcrumb" aria-label="مسار الصفحة"><a href="/" onClick={event => navigate(event, '/')}>الرئيسية</a><span aria-hidden="true">/</span><span aria-current="page">{page === 'names' ? 'أسماء الله الحسنى' : 'ذاكرة مفردات جزء عم'}</span></nav>
+          <nav className="portal-breadcrumb" aria-label="مسار الصفحة"><a href="/" onClick={event => navigate(event, '/')}>الرئيسية</a><span aria-hidden="true">/</span><span aria-current="page">{page === 'names' ? 'أسماء الله الحسنى' : page === 'quran' ? 'ألعاب كلمات جزء عم' : 'ذاكرة مفردات جزء عم'}</span></nav>
           <GameBoundary key={page}>
             <Suspense fallback={<div className="portal-message" role="status"><span className="portal-loader" aria-hidden="true" /><p>لحظة صغيرة.. نجهّز لعبتك!</p></div>}>
-              {page === 'names' ? <NamesGame /> : <MemoryGame />}
+              {page === 'names' ? <NamesGame /> : page === 'quran' ? <QuranGames /> : <MemoryGame />}
             </Suspense>
           </GameBoundary>
         </div>

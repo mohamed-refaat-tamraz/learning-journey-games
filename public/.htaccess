@@ -3,4 +3,4 @@ Options -Indexes
 RewriteEngine On
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(asma|memory)/?$ index.html [L]
+RewriteRule ^(asma|memory|quran)/?$ index.html [L]

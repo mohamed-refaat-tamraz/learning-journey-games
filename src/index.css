@@ -95,3 +95,9 @@
 @media (prefers-reduced-motion:reduce) {
   *,*::before,*::after { scroll-behavior:auto!important; animation-duration:.01ms!important; animation-iteration-count:1!important; transition-duration:.01ms!important; }
 }
+
+.portal-quran-visual { background:#e5eff3; }
+.portal-quran-words { display:grid; grid-template-columns:repeat(2,90px); gap:12px; transform:rotate(-5deg); }
+.portal-quran-words span { padding:14px 8px; border-radius:15px; background:white; color:#236676; text-align:center; font-size:23px; font-weight:800; box-shadow:0 4px 0 #b7d2d8; }
+.portal-quran-card .portal-card-cta { background:#236676; box-shadow:0 3px 0 #194a56; }
+@media (min-width:900px) { .portal-games { grid-template-columns:repeat(3,minmax(0,1fr)); } .portal-card-content { padding:20px; } .portal-card-content h2 { font-size:23px; } }

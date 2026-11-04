@@ -10,7 +10,7 @@ const cache = path.join(project, 'node_modules/.cache/learning-games-check');
 await mkdir(cache, { recursive: true });
 await build({
   stdin: {
-    contents: "export { default } from './src/App'; export { NAMES_OF_ALLAH } from './src/games/names/data/namesData';",
+    contents: "export { default } from './src/App'; export { NAMES_OF_ALLAH } from './src/games/names/data/namesData'; export { MISSING_LETTER_DATA, QURAN_WORDS } from './src/games/quran/data/quranJuzAmmaData';",
     resolveDir: project, loader: 'tsx',
   },
   bundle: true, platform: 'node', format: 'esm', jsx: 'automatic',
@@ -58,7 +58,7 @@ localStorage.setItem('asma_allah_kids_game_v1', JSON.stringify(oldProgress));
 localStorage.setItem('juz_amma_badges', JSON.stringify([{ id: 'first_win', unlocked: true, unlockedAt: '2026-11-01T00:00:00Z' }]));
 const { default: React, act } = await import('react');
 const { createRoot } = await import('react-dom/client');
-const { default: App, NAMES_OF_ALLAH } = await import(pathToFileURL(path.join(cache, 'app.mjs')).href);
+const { default: App, NAMES_OF_ALLAH, MISSING_LETTER_DATA, QURAN_WORDS } = await import(pathToFileURL(path.join(cache, 'app.mjs')).href);
 const container = document.createElement('div');
 document.body.append(container);
 const root = createRoot(container);
@@ -126,7 +126,60 @@ try {
   await settle(100);
   assert.equal(window.location.pathname, '/memory', 'Browser back restores the game route');
   assert.ok(container.querySelector('#juz-amma-memory-app'));
-  console.log('PASS: both game routes, legacy score and badge preservation, answer scoring, card matching, shared sound, saved difficulty, timer cleanup, reset during mismatch, browser back.');
+  await go('/');
+  localStorage.setItem('quran_juz_amma_stats_v1', JSON.stringify({score: 80, stars: 2, gamesCompleted: {memory: 1}}));
+  await go('/quran');
+  await settle(100);
+  assert.ok(container.querySelector('#quran-games-app'));
+  const gameTitles = ['كروت الذاكرة القرآنية', 'الكلمات المتقاطعة', 'توصيل المفردات بالمعنى', 'الكلمة والنظير والمضاد', 'الحرف الناقص في الكلمة', 'الكلمة الناقصة في الآية'];
+  const selectQuranGame = async title => {
+    const heading = [...container.querySelectorAll('#quran-games-app h3')].find(el => el.textContent === title);
+    await click(heading.closest('[data-game]'));
+  };
+  for (const title of gameTitles) {
+    await selectQuranGame(title);
+    assert.ok([...container.querySelectorAll('h2')].some(el => el.textContent.includes(title)), title + ' opens');
+    await click(container.querySelector('#quran-games-app button[title="العودة لقائمة الألعاب"]'));
+    assert.equal(container.querySelectorAll('#quran-games-app [data-game]').length, 6);
+  }
+  // Both mute controls reflect the same preference, including spoken words.
+  await click(container.querySelector('.portal-sound'));
+  assert.equal(container.querySelector('#quran-games-app button[title="تفعيل الصوت"]') !== null, true);
+  await click(container.querySelector('#quran-games-app button[title="تفعيل الصوت"]'));
+  assert.equal(container.querySelector('.portal-sound').getAttribute('aria-pressed'), 'true');
+  // Complete a real eight-question run and verify the final answer is counted once.
+  await selectQuranGame('الحرف الناقص في الكلمة');
+  for (let i = 0; i < 8; i++) {
+    const word = container.querySelector('[data-question-word]').textContent.trim();
+    const question = MISSING_LETTER_DATA.find(q => q.displayWord === word);
+    assert.ok(question, 'Question is drawn from original data');
+    await click([...container.querySelectorAll('#quran-games-app button')].find(el => el.textContent.trim() === question.correctLetter));
+    await click(button(i === 7 ? 'عرض النتيجة' : 'السؤال التالي'));
+  }
+  assert.ok(container.textContent.includes('مبارك الإنجاز'));
+  let stats = JSON.parse(localStorage.getItem('quran_juz_amma_stats_v1'));
+  assert.equal(stats.score, 280, 'Exactly 200 added for eight correct answers');
+  assert.equal(stats.gamesCompleted.missing_letter, 1);
+  assert.equal(stats.gamesCompleted.memory, 1, 'Legacy collection stats survive');
+  await click(button('العب مجدداً'));
+  assert.ok(container.textContent.includes('السؤال 1 من 8'), 'Replay starts a fresh game');
+  assert.equal(container.querySelectorAll('[data-question-word]').length, 1);
+  await go('/');
+  await go('/quran');
+  stats = JSON.parse(localStorage.getItem('quran_juz_amma_stats_v1'));
+  assert.equal(stats.score, 280, 'Collection score persists across navigation');
+  // Leave with a pending match: no stale victory or points in another game.
+  await selectQuranGame('كروت الذاكرة القرآنية');
+  let pair = [...container.querySelectorAll('[data-pair-id]')];
+  await click(pair[0]);
+  await click(pair.find(el => el !== pair[0] && el.dataset.pairId === pair[0].dataset.pairId));
+  await click(container.querySelector('#quran-games-app button[title="العودة لقائمة الألعاب"]'));
+  await selectQuranGame('الكلمة الناقصة في الآية');
+  await settle(1250);
+  assert.ok(container.textContent.includes('الآية 1 من 8'));
+  assert.equal(JSON.parse(localStorage.getItem('quran_juz_amma_stats_v1')).score, 280);
+  assert.equal(JSON.parse(localStorage.getItem('asma_allah_kids_game_v1')).score, 49, 'Names score remains separate');
+  console.log('PASS: eight games, six collection screens, legacy progress, scoring, replay, shared sound, persistence, navigation and timer cleanup.');
 } finally {
   await act(async () => { root.unmount(); });
   await window.happyDOM.close();

@@ -1,0 +1,8 @@
+.quran-games { font-family:'Tajawal',sans-serif; }
+.quran-games .font-quran { font-family:'Amiri',serif; }
+.quran-games .font-cairo,.quran-games .font-tajawal { font-family:'Tajawal',sans-serif; }
+.quran-games .perspective-1000 { perspective:1000px; }
+.quran-games .transform-style-3d { transform-style:preserve-3d; }
+.quran-games .backface-hidden { backface-visibility:hidden; -webkit-backface-visibility:hidden; }
+.quran-games .rotate-y-180 { transform:rotateY(180deg); }
+.quran-games.bg-islamic-pattern { background-color:#fdfbf7; background-image:radial-gradient(#059669 0.65px,transparent 0.65px),radial-gradient(#d97706 0.65px,#fdfbf7 0.65px); background-size:26px 26px; background-position:0 0,13px 13px; }
